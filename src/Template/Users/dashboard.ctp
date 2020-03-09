@@ -1,0 +1,1 @@
+<h1>Hi <?= $authUser['first_name']." ". $authUser['last_name']; ?></h1>

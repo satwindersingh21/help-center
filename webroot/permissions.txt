@@ -1,0 +1,218 @@
+sudo find . -type d -exec chmod 0755 {} \;
+sudo find . -type f -exec chmod 0644 {} \;
+
+sudo chmod 777 -R .
+
+ALTER TABLE  `membership_plans` ADD  `stripe_plan_id` VARCHAR( 255 ) NOT NULL AFTER  `price` ;
+
+ALTER TABLE  `subscriptions` CHANGE  `plan_id`  `membership_plan_id` INT NOT NULL ;
+
+ALTER TABLE  `subscriptions` CHANGE  `membership_plan_id`  `membership_plan_id` INT NOT NULL ;
+
+ALTER TABLE  `membership_plans` CHANGE  `stripe_plan_id`  `stripe_test_plan_id` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+ALTER TABLE  `membership_plans` ADD  `stripe_live_plan_id` VARCHAR( 255 ) NOT NULL AFTER  `stripe_test_plan_id` ;
+
+
+//4-6-19
+
+ALTER TABLE  `apartments` ADD  `current_period_start` DATE NOT NULL AFTER  `required_registration_type` ;
+ALTER TABLE  `apartments` ADD  `current_period_end` DATE NOT NULL AFTER  `current_period_start` ;
+
+ALTER TABLE  `subscriptions` ADD  `apartment_id` BIGINT NOT NULL AFTER  `user_id` ;
+
+ALTER TABLE  `subscriptions` CHANGE  `user_id`  `user_id` BIGINT( 20 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `subscriptions` CHANGE  `apartment_id`  `apartment_id` BIGINT( 20 ) NOT NULL DEFAULT  '0';
+
+// 5-6-19
+ALTER TABLE  `apartment_images` ADD  `category` VARCHAR( 255 ) NOT NULL DEFAULT  'Bathroom' AFTER  `image_id` ;
+
+
+//17-6-19
+ALTER TABLE  `apartments` CHANGE  `lease_terms_in_months`  `min_lease_terms_in_months` INT( 11 ) NOT NULL ;
+ALTER TABLE  `apartments` ADD  `max_lease_terms_in_months` INT NOT NULL AFTER  `min_lease_terms_in_months` ;
+
+
+ALTER TABLE  `floor_plans` ADD  `deposit` DECIMAL NOT NULL AFTER  `max_rent` ;
+ALTER TABLE  `floor_plan_logs` ADD  `deposit` DECIMAL NOT NULL AFTER  `max_rent` ;
+
+//21-6-19
+//ALTER TABLE  `users` ADD  `last_logged_in_at` DATETIME NOT NULL AFTER  `current_period_end` ;
+ALTER TABLE  `apartments` ADD  `last_e_blast_sent_at` DATETIME NOT NULL AFTER  `current_period_end` ;
+
+//24-6-19
+ALTER TABLE  `customer_searches` ADD  `contact_first_name` VARCHAR( 255 ) NOT NULL AFTER  `search_parameters` ,
+ADD  `contact_last_name` VARCHAR( 255 ) NOT NULL AFTER  `contact_first_name` ,
+ADD  `contact_email` VARCHAR( 255 ) NOT NULL AFTER  `contact_last_name` ,
+ADD  `contact_phone` VARCHAR( 255 ) NOT NULL AFTER  `contact_email` ;
+
+// 1-7-19
+ALTER TABLE  `searched_apartments` ADD  `message` LONGTEXT NOT NULL AFTER  `apartment_id` ;
+
+//3-7-19
+ALTER TABLE  `searched_apartments` ADD  `is_a_lead` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `notified` ;
+ALTER TABLE  `customer_searches` CHANGE  `no_of_apartments`  `no_of_searched_apartments` INT( 11 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `customer_searches` ADD  `no_of_contacted_apartments` INT NOT NULL DEFAULT  '0' AFTER  `no_of_searched_apartments`;
+
+CREATE TABLE IF NOT EXISTS `employements` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `apartment_id` bigint(20) NOT NULL,
+  `image_id` bigint(20) NOT NULL,
+  `top_description` longtext NOT NULL,
+  `job_description` longtext NOT NULL,
+  `salary` longtext NOT NULL,
+  `responsbilities` longtext NOT NULL,
+  `qualifications` longtext NOT NULL,
+  `education` longtext NOT NULL,
+  `benefits` longtext NOT NULL,
+  `apply_url` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+
+
+
+
+ALTER TABLE  `customer_lists` ADD  `is_seen` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `slug` ;
+ALTER TABLE  `customer_lists` CHANGE  `views`  `no_of_views` INT( 11 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `customer_lists` ADD  `is_realtor_notified` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `is_seen` ;
+
+//18-7-19
+ALTER TABLE  `customer_lists` ADD  `view_date` DATETIME NOT NULL AFTER  `no_of_views` ;
+
+//19-7-19
+ALTER TABLE  `customer_lists` ADD  `customer_search_id` BIGINT NOT NULL AFTER  `id` ;
+
+ALTER TABLE `customer_searches`
+  DROP `subject`,
+  DROP `message`,
+  DROP `contact_first_name`,
+  DROP `contact_last_name`,
+  DROP `contact_email`,
+  DROP `contact_phone`;
+
+  CREATE TABLE IF NOT EXISTS `customer_search_parameters` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `customer_search_id` bigint(20) NOT NULL,
+    `city_id` bigint(20) NOT NULL,
+    `bedrooms` int(11) NOT NULL DEFAULT '1',
+    `rent_range` varchar(200) NOT NULL DEFAULT '-',
+    `move_date` date NOT NULL,
+    `search_parameters` text NOT NULL,
+    `created` datetime NOT NULL,
+    `modified` datetime NOT NULL,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+
+  TRUNCATE `customer_lists`;
+  TRUNCATE `customer_list_apartments`;
+  TRUNCATE `customer_list_apartment_floor_plans`;
+  TRUNCATE `customer_searches`;
+  TRUNCATE `customer_search_parameters`;
+  TRUNCATE `searched_apartments`;
+
+
+  //25-9-19
+  ALTER TABLE `apartments` ADD `website` VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER `image_id`;
+
+  //26-9-19
+  ALTER TABLE `employements` CHANGE `status` `status` INT(1) NOT NULL DEFAULT '-1';
+  ALTER TABLE `employements` ADD `rank` VARCHAR(200) NOT NULL DEFAULT 'Not Ranked' AFTER `apply_url`;
+  ALTER TABLE `employements` CHANGE `rank` `rank` INT(0) NOT NULL DEFAULT '0';
+  ALTER TABLE `employements` CHANGE `rank` `rank` INT(11) NOT NULL DEFAULT '999999';
+  ALTER TABLE `contacts` ADD `status` INT NOT NULL DEFAULT '-1' AFTER `message`;
+
+
+  //27-9-19
+  ALTER TABLE `employements` CHANGE `responsbilities` `responsibilities` LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+  ALTER TABLE `e_blasts`
+    DROP `immediate_realtors`,
+    DROP `hourly_realtors`,
+    DROP `daily_realtors`,
+    DROP `immediate_sent_ids`,
+    DROP `hourly_sent_ids`,
+    DROP `daily_sent_ids`,
+    DROP `sent_status`,
+    DROP `no_of_attempts`;
+
+    //30-9-19
+    //ALTER TABLE `apartments` ADD `e_blast_reminder_sent_at` DATETIME NULL AFTER `last_e_blast_sent_at`;
+
+    //1-10-19
+    ALTER TABLE `apartment_images` ADD `sort_order` INT NOT NULL DEFAULT '0' AFTER `category`;
+
+    //4 -10-19
+    ALTER TABLE `apartments` ADD `profile_updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `e_blast_reminder_sent_at`;
+    ALTER TABLE `users` ADD `profile_updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `last_logged_in_at`;
+
+    //8-10-19
+    ALTER TABLE `e_blast_receivers` ADD `converted_to_message` TINYINT(1) NOT NULL DEFAULT '0' AFTER `no_of_attempts`;
+
+    //10-10-19
+        ALTER TABLE `admin_notes` ADD `team_member_name` VARCHAR(255) NULL AFTER `apartment_id`;
+        ALTER TABLE `apartments` ADD `payment_policy` VARCHAR(255) NULL AFTER `required_registration_type`, ADD `payment_policy_note` TEXT NULL AFTER `payment_policy`;
+        ALTER TABLE `apartments` ADD `registration_steps_done` INT(10) NOT NULL DEFAULT '0' AFTER `subscription_request`;
+
+  //14-10-19
+  ALTER TABLE `party_visitors` DROP `interested`, DROP `attend`;
+  ALTER TABLE `party_visitors` ADD `status` ENUM('Pending','Interested','Attending','Not Attending') NOT NULL DEFAULT 'Pending' AFTER `seen`;
+
+  //21-10-19
+  ALTER TABLE `chats` ADD `move_date` VARCHAR(255) NULL AFTER `apartment_id`, ADD `rent_range` VARCHAR(255) NULL AFTER `move_date`, ADD `bedrooms` INT NOT NULL DEFAULT '1' AFTER `rent_range`;
+  ALTER TABLE `messages` ADD `sender_role` VARCHAR(200) NOT NULL DEFAULT 'Apartment' AFTER `floor_plan_json`;
+  ALTER TABLE `chats` ADD `realtor_unread_count` INT NOT NULL DEFAULT '0' AFTER `no_of_messages`;
+  ALTER TABLE `chats` ADD `apartment_unread_count` INT NOT NULL DEFAULT '0' AFTER `no_of_messages`;
+
+ //25-10-19
+ ALTER TABLE `messages` ADD `sender_name` VARCHAR(255) NULL AFTER `floor_plan_json`;
+
+ //8-11-19
+ INSERT INTO `pages` ( `page`, `section_name`, `section_heading`, `section_tag_line`, `section_text`, `created`, `modified`) VALUES ( 'Training Videos', 'HEADER', 'WORKING TOGETHER TO ACHIEVE SUCCESS', '', 'We are here to answer your questions.', '2019-02-17 11:30:31', '2019-04-16 17:12:10'), ( 'Training Videos', 'Address', 'Address', '', 'P.O. Box 822045\r\nFort Worth, TX 76182', '2019-02-17 11:30:31', '2019-04-16 12:26:18'), ( 'Training Videos', 'Phone Number', 'Phone Number', '', '1-855-927-8734', '2019-02-17 11:30:31', '2019-02-17 11:33:06'), ( 'Training Videos', 'Email', 'Email', '', 'info@aptntnetwork.com', '2019-02-17 11:30:31', '2019-03-13 07:53:42'), ( 'Training Videos', 'Tell us about yourself', 'CONTACT US', '', 'Got a question? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.', '2019-02-17 11:30:31', '2019-04-16 12:25:59')
+
+ //11-11-19
+ ALTER TABLE `email_templates` ADD `category` VARCHAR(255) NULL AFTER `id`;
+
+ //13-11-19
+ ALTER TABLE `email_templates` ADD `placeholders` VARCHAR(255) NOT NULL AFTER `template`;
+
+//19-11-19
+ALTER TABLE `subscriptions` ADD `your_name` VARCHAR(255) NULL AFTER `membership_plan_id`;
+
+//25-11-19
+ALTER TABLE `employments` ADD `your_name` VARCHAR(255) NULL AFTER `apartment_id`;
+
+//27-11-19
+ALTER TABLE `employments` ADD `expired_status` INT(1) NOT NULL DEFAULT '-1' AFTER `rank`, ADD `current_period_start` DATE NULL AFTER `expired_status`, ADD `current_period_end` DATE NULL AFTER `current_period_start`;
+ALTER TABLE `employments` ADD `email_to_admin_at` DATE NULL AFTER `current_period_end`, ADD `email_to_user_at` DATE NULL AFTER `email_to_admin_at`, ADD `expired_by_admin` TINYINT(1) NOT NULL DEFAULT '0' AFTER `email_to_user_at`;
+
+    //ALTER TABLE `users` ADD `login_reminder_sent_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `last_logged_in_at`;
+
+
+ 29-1-2020
+  ALTER TABLE `customer_list_apartment_floor_plans` ADD `note` TEXT NULL AFTER `floor_plan_id`;
+
+
+06-02-2020
+UPDATE `apartments` AS A LEFT JOIN company_apartments AS CA ON CA.apartment_id = A.id SET A.company_id = CA.company_id
+ALTER TABLE `companies` ADD `no_of_apartments` INT NOT NULL DEFAULT '0' AFTER `lock_logo`;
+
+
+UPDATE companies C2 LEFT JOIN (SELECT C.id AS CID, C.name, count(A.id) AS A_COUNT FROM `companies` AS C LEFT JOIN apartments AS A ON C.id = A.company_id GROUP BY C.id ) AS C1
+ON C1.CID = C2.id
+SET C2.no_of_apartments = C1.A_COUNT;
+
+ALTER TABLE `companies` ADD `phone` VARCHAR(255) NULL AFTER `image_id`, ADD `address` VARCHAR(255) NULL AFTER `phone`, ADD `city_id` BIGINT NULL AFTER `address`, ADD `state_id` BIGINT NULL AFTER `city_id`, ADD `zip` VARCHAR(255) NULL AFTER `state_id`;
+
+
+//16-2-2020
+ALTER TABLE `searched_apartments` ADD `registration_number` VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER `apartment_id`;
+ALTER TABLE `searched_apartments` ADD `registration_type` VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER `apartment_id`;
+ALTER TABLE `searched_apartments` ADD `registration_json` TEXT NOT NULL AFTER `registration_number`;
+
+ALTER TABLE `searched_apartments` CHANGE `registration_number` `customer_registration_id` BIGINT NULL;

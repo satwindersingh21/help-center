@@ -1,0 +1,18 @@
+Admins
+sudo bin/cake bake migration CreateAdmins name:string email:string password:string role:string forgot_password_token:string  image_id:biginteger created modified
+
+Users
+sudo bin/cake bake migration CreateUsers first_name:string last_name:string password:string forgot_password_token:string  role:string registration_steps_done:integer active:boolean  created modified
+
+
+sudo bin/cake bake migration CreateHolidays name:string holiday_date:date   created modified
+
+
+sudo bin/cake bake migration CreateEmployees name:string email:string department:string  created modified
+
+sudo bin/cake bake migration CreateComplaints user_id:biginteger tittle:string complaint_body:text status:boolean  created modified
+
+
+
+
+
